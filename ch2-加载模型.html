@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>ch2 加载模型 with indeex - http://www.indeex.cc</title>
+
+    <script src="libs/Cesium.js"></script>
+    <style>
+        @import url(libs/widgets.css);
+
+        html,body,#cesiumContainer{
+            width: 100%;
+            height: 100%;
+            margin:0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+    //容器
+    var viewer = new Cesium.Viewer('container');
+
+    //场景
+    var scene = viewer.scene;
+    //坐标定位 聚焦到东地 经纬120.025478,30.288023 海拔0.0米
+    var modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(120.025478,30.288023,0.0));
+
+    //加载基本模型 格式：gltf
+    var model = scene.primitives.add(Cesium.Model.fromGltf({
+//        url:'./assets/haichuang/haichuang1hl_GLTF/haichuang1hl.gltf',
+//        modelMatrix:modelMatrix,
+//        scale:1.0,
+        url:'./assets/haichuang/haichuang4hl_GLTF/floors/haichuang4-1_GLTF/haichuang4-1.gltf',
+        modelMatrix:modelMatrix,
+        scale:1.0,
+    }));
+
+    //调整相机
+    viewer.camera.flyTo({
+        destination:Cesium.Cartesian3.fromDegrees(120.025478,30.288023,3.0),
+    })
+</script>
+</body>
+</html>
