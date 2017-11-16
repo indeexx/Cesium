@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>ch5 加载基本体 with indeex - http://www.indeex.cc</title>
+
+    <script src="libs/Cesium.js"></script>
+    <!--<link rel="stylesheet" href="libs/widgets.css">-->
+    <style>
+        @import url(libs/widgets.css);
+
+        html,body,#container{
+            width: 100%;
+            height: 100%;
+            margin:0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+//    let viewer = new Cesium.Viewer('container');
+    let viewer = new Cesium.Viewer('container',{
+        baseLayerPicker:false,
+        timeline:false,
+        homeButton:false,
+        fullscreenButton:false,
+        infoBox:false,
+        sceneModePicker:false,
+        navigationInstructionsInitiallyVisible:false,
+        navigationHelpButton:false,
+        geocoder:false,
+        animation:false,
+        selectionIndicator:false,
+        imageryProvider : new Cesium.WebMapTileServiceImageryProvider({
+            url: "http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
+            layer: "tdtVecBasicLayer",
+            style: "default",
+            format: "image/jpeg",
+            show: false
+        })
+    });
+
+
+//    全球影像中文注记
+    /*viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://t0.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg",
+        layer: "tdtAnnoLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        show: false
+    }));*/
+
+
+//    全球矢量中文注记
+    viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://t0.tianditu.com/cva_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg",
+        layer: "tdtAnnoLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible"
+    }));
+
+
+    //多边形
+    let createPolygonEntities = (name,arr,h) =>{
+        let entity = viewer.entities.add({
+            name:name,
+            polygon:{
+                //位置
+                hierarchy:arr,
+                height:h,//海拔
+                material:Cesium.Color.RED.withAlpha(.5),//颜色填充材质
+                outline:true,
+                outlineColor:Cesium.Color.BLACK,//边框颜色
+            }
+        });
+        return entity;
+    }
+
+    let polgArr = Cesium.Cartesian3.fromDegreesArray([
+        120.025478,30.288023,
+        120.026478,30.288023,
+        120.026478,30.3,
+        120.025478,30.3,
+        120.025478,30.288023,
+    ]);
+    let polg = createPolygonEntities('indeex',polgArr,0)
+
+    //可以单独设置海拔高度
+    polg.polygon.height = 0;
+    //配合海拔高度挤出 高度
+    polg.polygon.extrudedHeight = 100;
+    //简介
+    polg.description = `<img src="assets/ico.png" width="50%" style="float:left ;margin: 0 1em 1em 0;background-color:#fff;"><p>这是啥？不知道！</p><p>介绍：<a style="color:white;" target="_blank" href="http://www.indeex.cc">查看</a></p>`;
+
+
+
+    //椭圆
+    let createEllipseEntities = (lo,la,smna,smja) =>{
+        let entity = viewer.entities.add({
+            position:Cesium.Cartesian3.fromDegrees(lo,la),
+            ellipse:{
+                semiMinorAxis:smna,
+                semiMajorAxis:smja,
+                material:Cesium.Color.WHITE.withAlpha(.5),
+            }
+        });
+        return entity;
+    }
+
+    let ep = createEllipseEntities(120.025478,30.288023,2500.0,4000.0);
+    ep.ellipse.extrudedHeight = 1000;
+    ep.ellipse.material = 'http://hungking.cc/assets/ico.png';
+
+    //斑马条纹
+    let epTip = createEllipseEntities(120.025478,30.15,2500.0,4000.0);
+    epTip.ellipse.extrudedHeight = 1000;
+    epTip.ellipse.material = new Cesium.StripeMaterialProperty({
+        evenColor:Cesium.Color.WHITE,
+        oddColor:Cesium.Color.BLACK,
+        repeat:16,
+    });
+
+    //折线
+    let createPolylineEntities = (arr,w) =>{
+        let entity = viewer.entities.add({
+            polyline:{
+                positions:arr,
+                width:w,
+                loop:true,
+                show:true,
+                material:Cesium.Color.BLUE,
+            }
+        });
+        return entity;
+    }
+
+    let plArr = Cesium.Cartesian3.fromDegreesArray([
+        119.97,30.35,
+        120.1,30.35,
+        120.1,30.25,
+        119.97,30.25,
+        119.97,30.3515,
+    ])
+    let pl = createPolylineEntities(plArr,10);
+
+    //发光线
+    let plGlowArr = Cesium.Cartesian3.fromDegreesArray([
+        119.9,30.39,
+        120.15,30.39,
+    ])
+    let plGlow = createPolylineEntities(plGlowArr,10);
+    plGlow.polyline.material = new Cesium.PolylineGlowMaterialProperty({
+        glowPower:.3,
+        color:Cesium.Color.YELLOW,
+    })
+
+    //进入后镜头地洞跳转到实体动画
+//    viewer.zoomTo(polg)
+    //聚焦到所有实体上
+    viewer.zoomTo(viewer.entities);
+</script>
+</body>
+</html>

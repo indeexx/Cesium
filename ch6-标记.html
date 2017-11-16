@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>ch6 标记 with indeex - http://www.indeex.cc</title>
+
+    <script src="libs/Cesium.js"></script>
+    <!--<link rel="stylesheet" href="libs/widgets.css">-->
+    <style>
+        @import url(libs/widgets.css);
+
+        html,body,#container{
+            width: 100%;
+            height: 100%;
+            margin:0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+    //    let viewer = new Cesium.Viewer('container');
+    let viewer = new Cesium.Viewer('container',{
+        baseLayerPicker:false,
+        timeline:false,
+        homeButton:false,
+        fullscreenButton:false,
+        infoBox:false,
+        sceneModePicker:false,
+        navigationInstructionsInitiallyVisible:false,
+        navigationHelpButton:false,
+        geocoder:false,
+        animation:false,
+        selectionIndicator:false,
+        imageryProvider : new Cesium.WebMapTileServiceImageryProvider({
+            url: "http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
+            layer: "tdtVecBasicLayer",
+            style: "default",
+            format: "image/jpeg",
+            show: false
+        })
+    });
+
+
+    //    全球影像中文注记
+    /*viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://t0.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg",
+        layer: "tdtAnnoLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        show: false
+    }));*/
+
+
+    //    全球矢量中文注记
+    viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://t0.tianditu.com/cva_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg",
+        layer: "tdtAnnoLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible"
+    }));
+
+    //标记
+    let createTag = (name,lo,la,txt,obj = null) => {
+        let entity = viewer.entities.add({
+            name:name,
+            position:Cesium.Cartesian3.fromDegrees(lo,la),
+            point:{
+                pixelSize:10,//点大小，px单位
+                color:Cesium.Color.GREEN,
+                outlineColor:Cesium.Color.WHITE,
+                outlineWidth:1,
+            },
+            billboard:obj,//广告牌子，就这么翻译吧，懒得纠正
+            label:{
+                text:txt,
+                font:'16pt 楷体',
+                style:Cesium.LabelStyle.FILL_AND_OUTLINE,//填充方式
+                outlineWidth:1,
+                verticalOrigin:Cesium.VerticalOrigin.BOTTOM,//位置
+//                pixelOffset:new Cesium.Cartesian2(0,20),
+            }
+        });
+        return entity;
+    }
+
+    let hc = createTag('indeex',120.025478,30.288023,'海创科技中心');
+    //图标标识
+    let hcObj = {
+        image:'http://hungking.cc/assets/ico.png',
+        width:64,
+        height:64,
+    };
+    let hcTag = createTag('indeex',120.025478,30.288023,'海创科技中心',hcObj);
+
+    viewer.zoomTo(viewer.entities);
+
+    //镜头固定
+    viewer.trackedEntity = hc;
+</script>
+</body>
+</html>
